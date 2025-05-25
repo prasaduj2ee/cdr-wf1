@@ -52,6 +52,20 @@ def get_commit_diff_lines():
 DIFF_LINES = get_commit_diff_lines()
 GENERAL_COMMENTS = defaultdict(list)  # file_path -> list of messages
 
+def get_pmd_severity(priority):
+    try:
+        p = int(priority)
+    except:
+        return "Unknown"
+
+    return {
+        1: "High",
+        2: "High",
+        3: "Medium",
+        4: "Low",
+        5: "Info"
+    }.get(p, "Unknown")
+
 # --- Post comment ---
 def post_comment(file_path, line, message):
     file_path = file_path.strip()
@@ -130,7 +144,8 @@ def parse_pmd(xml_path):
         violations = file_elem.findall("ns:violation", ns) if ns else file_elem.findall("violation")
         for violation in violations:
             line = violation.get("beginline")
-            severity = violation.get("severity", "Unknown")
+            priority = violation.get("priority", "3")
+            severity = get_pmd_severity(priority)
             message = f"[PMD:{severity}] {violation.text.strip()}"
             post_comment(file_path, line, message)
 
