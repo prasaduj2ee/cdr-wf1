@@ -34,7 +34,7 @@ public class TestMain {
     public static void m3(String[] args123) {
         System.out.printf("Hello and welcome new !");
         args123 = new String[]{"arg1", "arg2"};
-        String xyaz = "Hello";
+        String xyaz = "Hello1";
         int yaz = 123;
 
         for (int i = 1; i <= 5; i++) {
