@@ -42,7 +42,7 @@ def review_code(diff):
 Review the following Git diff and provide constructive, specific feedback for improvements, potential bugs, best practices, or style violations:
 
 {diff}"""
-
+    print("Reviewing code with the following prompt:"+prompt)
     chat_completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
