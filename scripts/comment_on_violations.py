@@ -13,6 +13,7 @@ HEADERS = {
 BASE_API = f"https://api.github.com/repos/{REPO}/commits/{COMMIT_SHA}/comments"
 
 def post_comment(file_path, line, message):
+print(f"BASE_API: {BASE_API")
     payload = {
         "body": message,
         "path": file_path,
