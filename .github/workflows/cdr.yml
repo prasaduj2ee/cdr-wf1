@@ -68,7 +68,7 @@ jobs:
           REPO: ${{ github.repository }}
 
       - name: AI Code Review with OpenAI
-        #if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         run: python scripts/review_changes.py
         env:
           OA_TKN: ${{ secrets.OA_TKN }}

@@ -15,8 +15,20 @@ public class TestMain {
         }
     }
 
-    public static void test() {
+    public static void m1() {
         System.out.println("Test method called");
+    }
+
+    public static void m2(String[] args123) {
+        System.out.printf("Hello and welcome new !");
+
+        String xyaz = "Hello";
+        int yaz = 123;
+
+        for (int i = 1; i <= 5; i++) {
+            int j = i * 2;
+            System.out.println("i = " + i);
+        }
     }
 
 }
