@@ -7,7 +7,12 @@ openai.api_key = os.getenv("OA_TKN")
 github_token = os.getenv("GITHUB_TOKEN")
 repo = os.getenv("GITHUB_REPOSITORY")
 ref = os.getenv("GITHUB_REF")
-pr_number = ref.split("/")[-1] if ref and "pull" in ref else None
+
+pr_number = None
+if ref and ref.startswith("refs/pull/"):
+    parts = ref.split("/")
+    if len(parts) >= 3:
+        pr_number = parts[2]
 
 def get_diff():
     if not pr_number:
