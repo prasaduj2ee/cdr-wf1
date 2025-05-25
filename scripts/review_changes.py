@@ -3,7 +3,7 @@ import openai
 import requests
 import json
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("OA_TKN")
 github_token = os.getenv("GITHUB_TOKEN")
 repo = os.getenv("GITHUB_REPOSITORY")
 ref = os.getenv("GITHUB_REF")

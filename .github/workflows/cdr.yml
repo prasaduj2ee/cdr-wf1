@@ -71,7 +71,7 @@ jobs:
         #if: github.event_name == 'pull_request'
         run: python scripts/review_changes.py
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OA_TKN: ${{ secrets.OA_TKN }}
           GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF: ${{ github.ref }}

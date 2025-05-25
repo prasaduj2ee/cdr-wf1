@@ -14,4 +14,9 @@ public class TestMain {
         System.out.println("i = " + i);
         }
     }
+
+    public static void test() {
+        System.out.println("Test method called");
+    }
+
 }
