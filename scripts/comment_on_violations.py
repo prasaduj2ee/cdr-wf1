@@ -142,7 +142,7 @@ def parse_checkstyle(xml_path):
                 if idx + 1 < len(parts):
                     category = parts[idx + 1]
 
-            message = f"[Checkstyle:{severity}][{category}] {error.get('message')} ([doc]({url}))"
+            message = f"[Checkstyle -> {category} -> {severity}] {error.get('message')} ([Reference]({url}))"
             post_comment(file_path, line, message)
 
 # --- Parse PMD XML ---
@@ -175,7 +175,7 @@ def parse_pmd(xml_path):
             url = violation.get("externalInfoUrl", "")
             msg_text = violation.text.strip()
 
-            message = f"[PMD:{severity}][{ruleset}] {msg_text} ([doc]({url}))" if url else f"[PMD:{severity}][{ruleset}] {msg_text}"
+            message = f"[PMD -> {ruleset} -> {severity}] {msg_text} ([Reference]({url}))" if url else f"[PMD:{severity}][{ruleset}] {msg_text}"
             post_comment(file_path, line, message)
 
 # --- Main ---
