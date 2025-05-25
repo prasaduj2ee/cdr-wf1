@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  pull_request:  # Required for AI review step
+    types: [opened, synchronize]
 
 jobs:
   code-review:
@@ -23,10 +25,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Checkstyle and PMD (continue on violations)
-        run: |
-          ./gradlew checkstyleMain pmdMain || true
+        run: ./gradlew checkstyleMain pmdMain || true
 
-      # ✅ Upload Checkstyle Reports (HTML + XML)
+      # ✅ Upload Checkstyle Reports
       - name: Upload Checkstyle HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -41,7 +42,7 @@ jobs:
           name: checkstyle-xml
           path: build/reports/checkstyle/main.xml
 
-      # ✅ Upload PMD Reports (HTML + XML)
+      # ✅ Upload PMD Reports
       - name: Upload PMD HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -57,11 +58,20 @@ jobs:
           path: build/reports/pmd/main.xml
 
       - name: Install Python dependencies
-        run: pip install requests
+        run: pip install requests openai
 
-      - name: Post comments for violations
+      - name: Post comments for static analysis violations
         run: python scripts/comment_on_violations.py
         env:
-          GITHUB_TOKEN : ${{ secrets.CDR1_TKN }}
+          GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
           COMMIT_SHA: ${{ github.sha }}
           REPO: ${{ github.repository }}
+
+      - name: AI Code Review with OpenAI
+        #if: github.event_name == 'pull_request'
+        run: python scripts/review_changes.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
