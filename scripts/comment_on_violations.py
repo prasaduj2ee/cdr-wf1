@@ -130,7 +130,7 @@ def parse_checkstyle(xml_path):
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
         for error in file_elem.findall("error"):
             line = error.get("line")
-            severity = error.get("severity", "info")
+            severity = error.get("severity", "info").title()
             source = error.get("source")
             url = get_checkstyle_url(source)
 
@@ -141,7 +141,7 @@ def parse_checkstyle(xml_path):
                 idx = parts.index("checks")
                 if idx + 1 < len(parts):
                     category = parts[idx + 1]
-
+            category = category.title()
             message = f"[Checkstyle -> {category} -> {severity}] {error.get('message')} ([Reference]({url}))"
             post_comment(file_path, line, message)
 
@@ -170,8 +170,8 @@ def parse_pmd(xml_path):
         for violation in violations:
             line = violation.get("beginline")
             priority = violation.get("priority", "3")
-            severity = get_pmd_severity(priority)
-            ruleset = violation.get("ruleset", "unknown")
+            severity = get_pmd_severity(priority).title()
+            ruleset = violation.get("ruleset", "unknown").title()
             url = violation.get("externalInfoUrl", "")
             msg_text = violation.text.strip()
 
