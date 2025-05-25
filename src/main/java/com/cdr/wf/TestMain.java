@@ -7,6 +7,7 @@ public class TestMain {
         System.out.printf("Hello and welcome new !");
 
         String xyaz = "Hello";
+        int yaz = 123;
 
         for (int i = 1; i <= 5; i++) {System.out.println("i = " + i);
         }
