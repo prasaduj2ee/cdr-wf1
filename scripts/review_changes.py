@@ -44,7 +44,7 @@ Review the following Git diff and provide constructive, specific feedback for im
 {diff}"""
 
     chat_completion = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful and precise code reviewer."},
             {"role": "user", "content": prompt},
