@@ -2,7 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 import requests
 
-GITHUB_TOKEN = os.getenv("CDR1_TKN")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 COMMIT_SHA = os.getenv("COMMIT_SHA")
 REPO = os.getenv("REPO")
 
