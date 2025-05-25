@@ -7,7 +7,7 @@ COMMIT_SHA = os.getenv("COMMIT_SHA")
 REPO = os.getenv("REPO")
 
 HEADERS = {
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Authorization": f"Bearer " + os.environ["GITHUB_TOKEN"],
     "Accept": "application/vnd.github.v3+json"
 }
 BASE_API = f"https://api.github.com/repos/{REPO}/commits/{COMMIT_SHA}/comments"
