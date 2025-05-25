@@ -62,6 +62,6 @@ jobs:
       - name: Post comments for violations
         run: python scripts/comment_on_violations.py
         env:
-          GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
+          CDR1_TKN: ${{ secrets.CDR1_TKN }}
           COMMIT_SHA: ${{ github.sha }}
           REPO: ${{ github.repository }}
