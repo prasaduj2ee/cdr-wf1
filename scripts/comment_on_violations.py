@@ -133,7 +133,16 @@ def parse_checkstyle(xml_path):
             severity = error.get("severity", "info")
             source = error.get("source")
             url = get_checkstyle_url(source)
-            message = f"[Checkstyle:{severity}] {error.get('message')} ([doc]({url}))"
+
+            # Extract category
+            category = "unknown"
+            parts = source.split(".") if source else []
+            if "checks" in parts:
+                idx = parts.index("checks")
+                if idx + 1 < len(parts):
+                    category = parts[idx + 1]
+
+            message = f"[Checkstyle:{severity}][{category}] {error.get('message')} ([doc]({url}))"
             post_comment(file_path, line, message)
 
 # --- Parse PMD XML ---
@@ -162,9 +171,11 @@ def parse_pmd(xml_path):
             line = violation.get("beginline")
             priority = violation.get("priority", "3")
             severity = get_pmd_severity(priority)
+            ruleset = violation.get("ruleset", "unknown")
             url = violation.get("externalInfoUrl", "")
             msg_text = violation.text.strip()
-            message = f"[PMD:{severity}] {msg_text} ([doc]({url}))" if url else f"[PMD:{severity}] {msg_text}"
+
+            message = f"[PMD:{severity}][{ruleset}] {msg_text} ([doc]({url}))" if url else f"[PMD:{severity}][{ruleset}] {msg_text}"
             post_comment(file_path, line, message)
 
 # --- Main ---
