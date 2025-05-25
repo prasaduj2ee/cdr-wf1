@@ -45,9 +45,23 @@ def parse_pmd(xml_path):
         return
     tree = ET.parse(xml_path)
     root = tree.getroot()
+
+    # Extract namespace (e.g., '{http://pmd.sourceforge.net/report/2.0.0}')
+    namespace = ''
+    if root.tag.startswith('{'):
+        namespace = root.tag.split('}')[0].strip('{')
+        ns = {'ns': namespace}
+    else:
+        ns = {}
+
+    # Print the entire root XML (optional debug)
     xml_str = ET.tostring(root, encoding='unicode')
     print(f"PMD file root: {xml_str}")
-    for file_elem in root.findall("file"):
+
+    # Use namespace-aware path if needed
+    file_elements = root.findall("ns:file", ns) if ns else root.findall("file")
+
+    for file_elem in file_elements:
         file_path = file_elem.get("name")
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
         for violation in file_elem.findall("violation"):
