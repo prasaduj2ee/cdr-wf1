@@ -102,7 +102,8 @@ def parse_checkstyle(xml_path):
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
         for error in file_elem.findall("error"):
             line = error.get("line")
-            message = f"[Checkstyle] {error.get('message')}"
+            severity = error.get("severity", "info")
+            message = f"[Checkstyle:{severity}] {error.get('message')}"
             post_comment(file_path, line, message)
 
 # --- Parse PMD XML ---
@@ -129,7 +130,8 @@ def parse_pmd(xml_path):
         violations = file_elem.findall("ns:violation", ns) if ns else file_elem.findall("violation")
         for violation in violations:
             line = violation.get("beginline")
-            message = f"[PMD] {violation.text.strip()}"
+            severity = violation.get("severity", "Unknown")
+            message = f"[PMD:{severity}] {violation.text.strip()}"
             post_comment(file_path, line, message)
 
 # --- Main ---
