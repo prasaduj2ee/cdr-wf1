@@ -20,7 +20,7 @@ def post_comment(file_path, line, message):
         "line": int(line),
         "position": 1  # Dummy; GitHub uses it for PRs but ignores for direct commit comments
     }
-    print("payload->" + payload)
+    print("payload -> " + json.dumps(payload, indent=2))
     response = requests.post(BASE_API, headers=HEADERS, json=payload)
     print(f"Posted: {response.status_code} - {message}")
 
