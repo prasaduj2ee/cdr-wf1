@@ -62,7 +62,7 @@ def parse_pmd(xml_path):
     file_elements = root.findall("ns:file", ns) if ns else root.findall("file")
 
     for file_elem in file_elements:
-    print(f"file_elem: {file_elem}")
+        print(f"file_elem: {file_elem}")
         file_path = file_elem.get("name")
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
 
