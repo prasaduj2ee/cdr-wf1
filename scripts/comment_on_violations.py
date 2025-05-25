@@ -2,8 +2,9 @@ import os
 import xml.etree.ElementTree as ET
 import requests
 import json
+from collections import defaultdict
 
-# ENV variables
+# --- Config from environment ---
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 COMMIT_SHA = os.getenv("COMMIT_SHA")
 REPO = os.getenv("REPO")
@@ -15,9 +16,8 @@ HEADERS = {
 
 BASE_API = f"https://api.github.com/repos/{REPO}/commits/{COMMIT_SHA}/comments"
 
-# --- Fetch diff info to determine which lines changed ---
+# --- Fetch commit diff to determine changed lines ---
 def get_commit_diff_lines():
-    """Fetch diff and return a dict of {file_path: set of changed lines}"""
     diff_url = f"https://api.github.com/repos/{REPO}/commits/{COMMIT_SHA}"
     response = requests.get(diff_url, headers=HEADERS)
     if response.status_code != 200:
@@ -35,7 +35,6 @@ def get_commit_diff_lines():
         new_line = None
         for line in patch.splitlines():
             if line.startswith("@@"):
-                # Parse diff hunk: @@ -old_start,old_count +new_start,new_count @@
                 try:
                     new_info = line.split("@@")[1].split("+")[1].split(" ")[0]
                     new_start = int(new_info.split(",")[0])
@@ -51,32 +50,45 @@ def get_commit_diff_lines():
     return diff_map
 
 DIFF_LINES = get_commit_diff_lines()
+GENERAL_COMMENTS = defaultdict(list)  # file_path -> list of messages
 
-# --- Post comment depending on line change status ---
+# --- Post comment ---
 def post_comment(file_path, line, message):
     file_path = file_path.strip()
     line_num = int(line) if line else None
     path_in_diff = DIFF_LINES.get(file_path, set())
 
     if line_num and line_num in path_in_diff:
-        # Inline comment on a changed line
+        # Inline comment
         payload = {
             "body": message,
             "path": file_path,
             "line": line_num,
-            "position": 1  # required even though it's ignored for direct commits
+            "position": 1  # Required but ignored for commit comments
         }
+        print("Posting inline comment:\n" + json.dumps(payload, indent=2))
+        response = requests.post(BASE_API, headers=HEADERS, json=payload)
+        print(f"Inline response {response.status_code}")
+        if response.status_code != 201:
+            print(response.text)
     else:
-        # Fallback: general commit comment
-        payload = {
-            "body": f"{message}\n(file: `{file_path}`, line: {line})"
-        }
+        # Queue general comment by file
+        GENERAL_COMMENTS[file_path].append(f"Line {line}: {message}")
 
-    print("Posting comment:\n" + json.dumps(payload, indent=2))
-    response = requests.post(BASE_API, headers=HEADERS, json=payload)
-    print(f"Response {response.status_code}")
-    if response.status_code != 201:
-        print(response.text)
+# --- Post grouped general comments ---
+def post_general_comments():
+    for file_path, messages in GENERAL_COMMENTS.items():
+        comment_body = f"### Static Analysis Results for `{file_path}`\n"
+        comment_body += "\n".join(f"- {msg}" for msg in messages)
+
+        payload = {
+            "body": comment_body
+        }
+        print("Posting grouped general comment:\n" + json.dumps(payload, indent=2))
+        response = requests.post(BASE_API, headers=HEADERS, json=payload)
+        print(f"General comment response {response.status_code}")
+        if response.status_code != 201:
+            print(response.text)
 
 # --- Parse Checkstyle XML ---
 def parse_checkstyle(xml_path):
@@ -101,7 +113,7 @@ def parse_pmd(xml_path):
     tree = ET.parse(xml_path)
     root = tree.getroot()
 
-    # Handle XML namespaces
+    # Handle namespace
     namespace = ''
     if root.tag.startswith('{'):
         namespace = root.tag.split('}')[0].strip('{')
@@ -120,6 +132,7 @@ def parse_pmd(xml_path):
             message = f"[PMD] {violation.text.strip()}"
             post_comment(file_path, line, message)
 
-# --- Run both parsers ---
+# --- Main ---
 parse_checkstyle("build/reports/checkstyle/main.xml")
 parse_pmd("build/reports/pmd/main.xml")
+post_general_comments()
