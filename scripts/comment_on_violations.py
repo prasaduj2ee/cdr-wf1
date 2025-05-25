@@ -1,6 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
 import requests
+import json
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 COMMIT_SHA = os.getenv("COMMIT_SHA")
