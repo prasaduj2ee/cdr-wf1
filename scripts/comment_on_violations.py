@@ -45,7 +45,8 @@ def parse_pmd(xml_path):
         return
     tree = ET.parse(xml_path)
     root = tree.getroot()
-    print(f"PMD file root: {root}")
+    xml_str = ET.tostring(root, encoding='unicode')
+    print(f"PMD file root: {xml_str}")
     for file_elem in root.findall("file"):
         file_path = file_elem.get("name")
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
