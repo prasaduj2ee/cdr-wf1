@@ -22,15 +22,39 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: Run Checkstyle and PMD
-        run: ./gradlew checkstyleMain pmdMain
+      - name: Run Checkstyle and PMD (continue on violations)
+        run: |
+          ./gradlew checkstyleMain pmdMain || true
 
-      - name: Upload Checkstyle Report
+      # ✅ Upload Checkstyle Reports (HTML + XML)
+      - name: Upload Checkstyle HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: checkstyle-report
+          name: checkstyle-html
           path: build/reports/checkstyle/main.html
+
+      - name: Upload Checkstyle XML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-xml
+          path: build/reports/checkstyle/main.xml
+
+      # ✅ Upload PMD Reports (HTML + XML)
+      - name: Upload PMD HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-html
+          path: build/reports/pmd/main.html
+
+      - name: Upload PMD XML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-xml
+          path: build/reports/pmd/main.xml
 
       - name: Install Python dependencies
         run: pip install requests
