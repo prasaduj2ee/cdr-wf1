@@ -58,7 +58,9 @@ jobs:
           path: build/reports/pmd/main.xml
 
       - name: Install Python dependencies
-        run: pip install requests openai
+        run: |
+          pip install --upgrade pip
+          pip install requests openai
 
       - name: Post comments for static analysis violations
         run: python scripts/comment_on_violations.py

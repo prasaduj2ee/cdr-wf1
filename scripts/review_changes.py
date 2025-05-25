@@ -3,11 +3,15 @@ import openai
 import requests
 import json
 
-openai.api_key = os.getenv("OA_TKN")
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OA_TKN"))
+
 github_token = os.getenv("GITHUB_TOKEN")
 repo = os.getenv("GITHUB_REPOSITORY")
 ref = os.getenv("GITHUB_REF")
 
+# Fix PR number extraction
 pr_number = None
 if ref and ref.startswith("refs/pull/"):
     parts = ref.split("/")
@@ -39,7 +43,7 @@ Review the following Git diff and provide constructive, specific feedback for im
 
 {diff}"""
 
-    response = openai.ChatCompletion.create(
+    chat_completion = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are a helpful and precise code reviewer."},
@@ -47,7 +51,7 @@ Review the following Git diff and provide constructive, specific feedback for im
         ],
         temperature=0.3,
     )
-    return response["choices"][0]["message"]["content"]
+    return chat_completion.choices[0].message.content
 
 def comment_on_pr(review):
     url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
