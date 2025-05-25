@@ -52,6 +52,7 @@ def get_commit_diff_lines():
 DIFF_LINES = get_commit_diff_lines()
 GENERAL_COMMENTS = defaultdict(list)  # file_path -> list of messages
 
+# --- Severity mapping for PMD ---
 def get_pmd_severity(priority):
     try:
         p = int(priority)
@@ -65,6 +66,19 @@ def get_pmd_severity(priority):
         4: "Low",
         5: "Info"
     }.get(p, "Unknown")
+
+# --- Derive Checkstyle rule doc URL ---
+def get_checkstyle_url(source: str) -> str:
+    if not source:
+        return ""
+    parts = source.split(".")
+    if "checks" in parts:
+        idx = parts.index("checks")
+        if idx + 1 < len(parts):
+            category = parts[idx + 1]
+            rule = parts[-1].replace("Check", "")
+            return f"https://checkstyle.sourceforge.io/config_{category}.html#{rule}"
+    return "https://checkstyle.sourceforge.io/checks.html"
 
 # --- Post comment ---
 def post_comment(file_path, line, message):
@@ -117,7 +131,9 @@ def parse_checkstyle(xml_path):
         for error in file_elem.findall("error"):
             line = error.get("line")
             severity = error.get("severity", "info")
-            message = f"[Checkstyle:{severity}] {error.get('message')}"
+            source = error.get("source")
+            url = get_checkstyle_url(source)
+            message = f"[Checkstyle:{severity}] {error.get('message')} ([doc]({url}))"
             post_comment(file_path, line, message)
 
 # --- Parse PMD XML ---
@@ -146,7 +162,9 @@ def parse_pmd(xml_path):
             line = violation.get("beginline")
             priority = violation.get("priority", "3")
             severity = get_pmd_severity(priority)
-            message = f"[PMD:{severity}] {violation.text.strip()}"
+            url = violation.get("externalInfoUrl", "")
+            msg_text = violation.text.strip()
+            message = f"[PMD:{severity}] {msg_text} ([doc]({url}))" if url else f"[PMD:{severity}] {msg_text}"
             post_comment(file_path, line, message)
 
 # --- Main ---
