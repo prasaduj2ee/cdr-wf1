@@ -59,20 +59,12 @@ jobs:
       - name: Install Python dependencies
         run: pip install requests
 
-      - name: Test GitHub API access
-        run: |
-          curl -H "Authorization: token $GITHUB_TOKEN" \
-               https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
-
       - name: Run test comment script
         run: python scripts/test_post_comment.py
         env:
             REPO: ${{ github.repository }}
             COMMIT_SHA: ${{ github.sha }}
             GITHUB_TOKEN: ${{ secrets.CDR1_TKN }} # or use secrets.GITHUB_TOKEN for internal commits
-
 
       - name: Post comments for violations
         run: python scripts/comment_on_violations.py
