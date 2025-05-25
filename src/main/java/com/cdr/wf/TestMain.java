@@ -4,7 +4,7 @@ package com.cdr.wf;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class TestMain {
     public static void Tain(String[] args123) {
-        System.out.printf("Hello and welcome!");
+        System.out.printf("Hello and welcome new!");
 
         String xyaz = "Hello";
 
