@@ -16,7 +16,7 @@ headers = {
 }
 
 payload = {
-    "body": "✅ Test comment posted by GitHub Actions!"
+    "body": "✅ Test comment posted by GitHub Actions! "
 }
 
 # Make the POST request
