@@ -62,9 +62,15 @@ def parse_pmd(xml_path):
     file_elements = root.findall("ns:file", ns) if ns else root.findall("file")
 
     for file_elem in file_elements:
+    print(f"file_elem: {file_elem}")
         file_path = file_elem.get("name")
         file_path = file_path[file_path.find("src/"):] if "src/" in file_path else file_path
-        for violation in file_elem.findall("violation"):
+
+        violation_elements = file_elem.findall("ns:violation", ns) if ns else file_elem.findall("violation")
+        print(f"violation_elements: {violation_elements}")
+
+        for violation in violation_elements:
+            print(f"violation: {violation}")
             line = violation.get("beginline")
             message = f"[PMD] {violation.text.strip()}"
             post_comment(file_path, line, message)
