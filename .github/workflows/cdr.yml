@@ -65,7 +65,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CDR1_TKN }}
           COMMIT_SHA: ${{ github.sha }}
-          REPO: ${{ github.repository }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: AI Code Review with OpenAI
         #if: github.event_name == 'pull_request'
